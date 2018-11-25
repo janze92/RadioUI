@@ -270,14 +270,14 @@
      <widget class="QPushButton" name="reload">
       <property name="geometry">
        <rect>
-        <x>330</x>
-        <y>180</y>
-        <width>103</width>
-        <height>34</height>
+        <x>280</x>
+        <y>160</y>
+        <width>191</width>
+        <height>71</height>
        </rect>
       </property>
       <property name="text">
-       <string>Reload</string>
+       <string>Kanavalista</string>
       </property>
      </widget>
     </widget>

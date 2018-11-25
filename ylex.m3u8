@@ -1,0 +1,5 @@
+#EXTM3U
+#EXT-X-STREAM-INF:PROGRAM-ID=1,BANDWIDTH=256000,CODECS="mp4a.40.2"
+http://yleuni-f.akamaihd.net/i/yleliveradiohd_2@113879/index_256_a-p.m3u8?sd=10&rebase=on
+#EXT-X-STREAM-INF:PROGRAM-ID=1,BANDWIDTH=256000,CODECS="mp4a.40.2"
+http://yleuni-f.akamaihd.net/i/yleliveradiohd_2@113879/index_256_a-b.m3u8?sd=10&rebase=on

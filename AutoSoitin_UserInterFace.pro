@@ -39,6 +39,14 @@ HEADERS += \
 FORMS += \
         Main.ui
 
+DISTFILES += \
+    /home/janze/Music/ylex.m3u8 \
+    /home/janze/Music/suomipop.m3u8 \
+    /home/janze/Music/radiorock.m3u8 \
+    /home/janze/Music/loop.m3u8 \
+    /home/janze/Music/hitmix.m3u8 \
+    README.md
+
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin

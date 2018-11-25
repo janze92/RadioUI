@@ -1,6 +1,18 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#include "stdlib.h"  /* system lib */
+#include "stdio.h"
+#include "unistd.h"
+#include "iostream"
+#include "string"
+#include "thread"
+#include "sstream" // blah
+#include "fcntl.h"
+#include "errno.h"
+#include "sys/wait.h"
+#include "fstream"
+#include <list>
 #include <QMainWindow>
 
 namespace Ui {
@@ -44,6 +56,8 @@ private slots:
     void on_tabWidget_tabBarClicked();
 
     void on_reload_pressed();
+
+    void readConfigFile(const char* filename, std::list<std::string>& lines);
 
 private:
     Ui::MainWindow *ui;
