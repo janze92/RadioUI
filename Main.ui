@@ -53,7 +53,7 @@
      <enum>QTabWidget::Rounded</enum>
     </property>
     <property name="currentIndex">
-     <number>1</number>
+     <number>2</number>
     </property>
     <property name="iconSize">
      <size>
@@ -267,6 +267,19 @@
      <attribute name="title">
       <string/>
      </attribute>
+     <widget class="QPushButton" name="reload">
+      <property name="geometry">
+       <rect>
+        <x>330</x>
+        <y>180</y>
+        <width>103</width>
+        <height>34</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Reload</string>
+      </property>
+     </widget>
     </widget>
     <widget class="QWidget" name="Time">
      <property name="layoutDirection">

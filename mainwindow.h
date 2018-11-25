@@ -41,7 +41,9 @@ private slots:
 
     void on_exit_2_pressed();
 
-    void on_tabWidget_tabBarClicked(int index);
+    void on_tabWidget_tabBarClicked();
+
+    void on_reload_pressed();
 
 private:
     Ui::MainWindow *ui;

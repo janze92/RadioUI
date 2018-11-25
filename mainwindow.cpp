@@ -17,7 +17,12 @@ int soi=0;
 int blob=-4;
 bool debug=true;
 pid_t PID=-1;
-
+std::string kanavalista[6]={"/home/janze/Music/ylex.m3u8",
+                            "http://cdn.nrjaudio.fm/adwz1/fi/35001/mp3_128.mp3",
+                            "https://digitacdn.akamaized.net/hls/live/629243/radiorock/master-128000.m3u8",
+                            "https://digitacdn.akamaized.net/hls/live/629243/radiosuomipop/master.m3u8",
+                            "https://digitacdn.akamaized.net/hls/live/629243/loop/master-128000.m3u8",
+                            "https://digitacdn.akamaized.net/hls/live/629243/hitmix/master-128000.m3u8"};
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -44,12 +49,15 @@ std::string volumeGet(std::string cmd) {
     stream = popen(cmd.c_str(), "r");
     if (stream) {
     while (!feof(stream))
-    if (fgets(buffer, max_buffer, stream) != NULL) data.append(buffer);
+    if (fgets(buffer, max_buffer, stream) != nullptr) data.append(buffer);
     pclose(stream);
     }
     return data;
 }
 
+void todo(){
+        std::cout << kanavalista[0];
+}
 
 void radio(int i)
 {
@@ -64,37 +72,40 @@ void radio(int i)
     if(PID == 0){
         switch (i) {
         case 1: {
-            execl("/usr/bin/mpv", "mpv", "/home/janze/Music/ylex.m3u8",NULL);
+            char const *kanava = kanavalista[0].c_str();
+            execl("/usr/bin/mpv", "mpv",kanava ,NULL);
             break;
         }
         case 2: {
-            execl("/usr/bin/mpv", "mpv", "http://cdn.nrjaudio.fm/adwz1/fi/35001/mp3_128.mp3",NULL);
+            char const *kanava = kanavalista[1].c_str();
+            execl("/usr/bin/mpv", "mpv",kanava ,NULL);
+            //execl("/usr/bin/mpv", "mpv", "http://cdn.nrjaudio.fm/adwz1/fi/35001/mp3_128.mp3",NULL);
             break;
         }
         case 3: {
-            execl("/usr/bin/mpv", "mpv", "https://digitacdn.akamaized.net/hls/live/629243/radiorock/master-128000.m3u8",NULL);
+            char const *kanava = kanavalista[2].c_str();
+            execl("/usr/bin/mpv", "mpv",kanava ,NULL);
+            //execl("/usr/bin/mpv", "mpv", "https://digitacdn.akamaized.net/hls/live/629243/radiorock/master-128000.m3u8",NULL);
             break;
         }
         case 4: {
-            execl("/usr/bin/mpv", "mpv", "https://digitacdn.akamaized.net/hls/live/629243/radiosuomipop/master.m3u8",NULL);
+            char const *kanava = kanavalista[3].c_str();
+            execl("/usr/bin/mpv", "mpv",kanava ,NULL);
+            //execl("/usr/bin/mpv", "mpv", "https://digitacdn.akamaized.net/hls/live/629243/radiosuomipop/master.m3u8",NULL);
             break;
         }
         case 5: {
-            execl("/usr/bin/mpv", "mpv", "https://digitacdn.akamaized.net/hls/live/629243/loop/master-128000.m3u8",NULL);
+            char const *kanava = kanavalista[4].c_str();
+            execl("/usr/bin/mpv", "mpv",kanava ,NULL);
+            //execl("/usr/bin/mpv", "mpv", "https://digitacdn.akamaized.net/hls/live/629243/loop/master-128000.m3u8",NULL);
             break;
         }
         case 6: {
-            execl("/usr/bin/mpv", "mpv", "https://digitacdn.akamaized.net/hls/live/629243/hitmix/master-128000.m3u8",NULL);
+            char const *kanava = kanavalista[5].c_str();
+            execl("/usr/bin/mpv", "mpv",kanava ,NULL);
+            //execl("/usr/bin/mpv", "mpv", "https://digitacdn.akamaized.net/hls/live/629243/hitmix/master-128000.m3u8",NULL);
             break;
         }
-
-            /*
-                https://digitacdn.akamaized.net/hls/live/629243/radiosuomipop/master.m3u8
-                https://digitacdn.akamaized.net/hls/live/629243/loop/master-128000.m3u8
-                https://digitacdn.akamaized.net/hls/live/629243/hitmix/master-128000.m3u8
-
-
-            */
         }
     }
 }
@@ -223,7 +234,13 @@ void MainWindow::on_exit_2_pressed()
     nuppiSetti();
 }
 
-void MainWindow::on_tabWidget_tabBarClicked(int index)
+void MainWindow::on_tabWidget_tabBarClicked()
 {
     nuppiSetti();
+}
+
+void MainWindow::on_reload_pressed()
+{
+    // TODO update radio string array
+   todo();
 }
