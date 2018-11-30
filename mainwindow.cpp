@@ -5,7 +5,6 @@
 #include "unistd.h"
 #include "iostream"
 #include "string"
-#include "thread"
 #include "sstream" // blah
 #include "fcntl.h"
 #include "errno.h"
@@ -13,25 +12,39 @@
 #include "fstream"
 #include <list>
 #include <iterator>
+#include <QTimer>
+#include <QByteArray>
+#include <cstdlib>
+#include <QProcess>
+#include <QDebug>
+#include <pthread.h>
+#include <thread>
+
  using namespace std;
 
 // julkiset muuttujat
+static bool debug=true;
 static int netti=0;
 static int soi=0;
-static bool debug=true;
 static pid_t PID=-1;
-static string kanavalista[6]={"/home/janze/Music/nrj.m3u8",
-                       "/home/janze/Music/ylex.m3u8",
-                            "/home/janze/Music/radiorock.m3u8",
-                            "/home/janze/Music/suomipop.m3u8",
-                            "/home/janze/Music/loop.m3u8",
-                            "/home/janze/Music/hitmix.m3u8"};
+static string kanavalista[6];
+static bool volUP=false;
+static bool volDN=false;
+static const int num_threads = 1;
+static int volume;
+
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    if(debug == false){
+    QTimer::singleShot(1000, this, SLOT(showFullScreen()));
+    }
+    QTimer::singleShot(100,this, SLOT(on_tabWidget_tabBarClicked()));
+    QTimer::singleShot(100,this, SLOT(backRunnerCall()));
+
 }
 
 MainWindow::~MainWindow()
@@ -39,10 +52,25 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
+void MainWindow::test(){
+    const char *homePath = getenv("HOME");
+    if(homePath != nullptr)
+    {
+        QProcess Home;
+        Home.start("echo",QStringList() << homePath);
+        Home.waitForFinished(-1);
+        qDebug() << Home.readAllStandardOutput();
+    }
+}
+
+void volumeUP(){
+    system("pamixer --increase 1");
+}
+
+void volumeDN(){
+    system("pamixer --decrease 1");
+}
 string volumeGet(string cmd) {
-
-
-
     string data;
     FILE * stream;
     const int max_buffer = 256;
@@ -56,6 +84,26 @@ string volumeGet(string cmd) {
     pclose(stream);
     }
     return data;
+}
+
+void call_from_thread() {
+    while (true) {
+        if(volUP==true){
+            volumeUP();
+            usleep(50000);
+        }
+        if(volDN==true){
+            volumeDN();
+            usleep(50000);
+        }
+        usleep(10000);
+    }
+}
+
+void MainWindow::backRunnerCall(){
+    std::thread t[num_threads];
+    t[0] = std::thread(call_from_thread);
+    t[0].detach();
 }
 void MainWindow::readConfigFile(const char* filename, list<string>& lines)
 {
@@ -114,6 +162,7 @@ void radio(int i)
 
 
 void loadnetti(){
+    // TODO: legit check that adb is running and every command get executed
     char tmuxRun[]="tmux send-keys -t tetherUSB.0 'adb shell' ENTER";
     char tmuxRun2[]="tmux send-keys -t tetherUSB.0 'service call connectivity 34 i32 1 s16 text' ENTER";
     char tmuxRun3[]="tmux send-keys -t tetherUSB.0 'exit' ENTER";
@@ -134,7 +183,8 @@ void loadnetti(){
 
 void MainWindow::nuppiSetti(){
     int i=stoi( volumeGet("pamixer --get-volume") );
-    ui->dial->setValue(i);
+    ui->volumeSlider->setValue(i);
+
 }
 
 void radioCheck(int kanava){
@@ -164,34 +214,21 @@ void radioCheck(int kanava){
         }
 }
 
-
-
-void MainWindow::on_dial_valueChanged(int value)
-{
-    if (system(nullptr));
-        else exit (EXIT_FAILURE);
-    string pamixer = "pamixer --set-volume ";
-    string arvo = pamixer +  to_string(value);
-    char const *muutetaan = arvo.c_str();
-    // system command
-    system(muutetaan);
-}
-
-
-void MainWindow::on_exit_pressed()
-{
-    QCoreApplication::quit();
-}
 void MainWindow::on_mute_pressed()
 {
     int isItMuted = system("pamixer --get-mute");
     cout << isItMuted;
 
     if(isItMuted == 256){
+        int i=stoi( volumeGet("pamixer --get-volume") );
+        volume = i;
         system("pamixer -m");
+        ui->volumeSlider->setValue(0);
         }
     else {
         system("pamixer -u");
+        cout << volume << endl;
+        ui->volumeSlider->setValue(volume);
     }
 }
 
@@ -231,11 +268,6 @@ void MainWindow::on_hitmix_pressed()
     radioCheck(6);
 }
 
-void MainWindow::on_exit_2_pressed()
-{
-    nuppiSetti();
-}
-
 void MainWindow::on_tabWidget_tabBarClicked()
 {
     nuppiSetti();
@@ -256,4 +288,50 @@ void MainWindow::on_reload_pressed()
        kanavalista[n]=line;
        n++;
    }
+}
+
+void MainWindow::on_blobbi_nappo_pressed()
+{
+    test();
+}
+
+void MainWindow::on_volumeSlider_valueChanged(int value)
+{
+    if (system(nullptr));
+        else exit (EXIT_FAILURE);
+    string pamixer = "pamixer --set-volume ";
+    string arvo = pamixer +  to_string(value);
+    char const *muutetaan = arvo.c_str();
+    // system command
+    system(muutetaan);
+}
+
+
+
+void MainWindow::on_volumeUp_pressed()
+{
+    volUP=true;
+}
+
+void MainWindow::on_volumeUp_released()
+{
+    volUP=false;
+    nuppiSetti();
+}
+
+void MainWindow::on_button_quit_pressed()
+{
+    //mpv quit check
+    QCoreApplication::quit();
+}
+
+void MainWindow::on_volumeDown_pressed()
+{
+    volDN=true;
+}
+
+void MainWindow::on_volumeDown_released()
+{
+    volDN=false;
+    nuppiSetti();
 }

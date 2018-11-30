@@ -29,9 +29,6 @@ public:
 
 private slots:
 
-    void on_dial_valueChanged(int value);
-
-    void on_exit_pressed();
 
     void on_mute_pressed();
 
@@ -51,13 +48,29 @@ private slots:
 
     void nuppiSetti();
 
-    void on_exit_2_pressed();
-
     void on_tabWidget_tabBarClicked();
 
     void on_reload_pressed();
 
     void readConfigFile(const char* filename, std::list<std::string>& lines);
+
+    void test();
+
+    void on_blobbi_nappo_pressed();
+
+    void on_volumeSlider_valueChanged(int value);
+
+    void on_volumeUp_pressed();
+
+    void on_button_quit_pressed();
+
+    void on_volumeUp_released();
+
+    void backRunnerCall();
+
+    void on_volumeDown_pressed();
+
+    void on_volumeDown_released();
 
 private:
     Ui::MainWindow *ui;

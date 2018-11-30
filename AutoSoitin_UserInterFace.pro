@@ -45,7 +45,8 @@ DISTFILES += \
     /home/janze/Music/radiorock.m3u8 \
     /home/janze/Music/loop.m3u8 \
     /home/janze/Music/hitmix.m3u8 \
-    README.md
+    README.md \
+    config.conf
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
