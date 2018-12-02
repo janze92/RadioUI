@@ -31,10 +31,21 @@ CONFIG += c++11 -pthread
 
 SOURCES += \
         main.cpp \
-        mainwindow.cpp
+        mainwindow.cpp \
+    blthallinta.cpp \
+    usbctl.cpp \
+    radioloader.cpp \
+    pahallinta.cpp \
+    scrap_book.cpp \
+    threading.cpp
 
 HEADERS += \
-        mainwindow.h
+        mainwindow.h \
+    blthallinta.h \
+    usbctl.h \
+    radioloader.h \
+    pahallinta.h \
+    threading.h
 
 FORMS += \
         Main.ui
