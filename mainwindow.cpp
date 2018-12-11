@@ -1,4 +1,9 @@
 #include "mainwindow.h"
+#include "pahallinta.h"
+#include "radioloader.h"
+#include "threading.h"
+#include "usbctl.h"
+#include "blthallinta.h"
 #include "ui_Main.h"
 #include "stdlib.h"  /* system lib */
 #include "stdio.h"
@@ -19,32 +24,50 @@
 #include <QDebug>
 #include <pthread.h>
 #include <thread>
+#include "QThread"
+#include <QString>
+#include <qpalette.h>
 
  using namespace std;
 
 // julkiset muuttujat
 static bool debug=true;
 static int netti=0;
-static int soi=0;
-static pid_t PID=-1;
+static pid_t pidi=-1;
 static string kanavalista[6];
+static std::string kanavanimet[5];
 static bool volUP=false;
 static bool volDN=false;
-static const int num_threads = 1;
 static int volume;
+static bool startting=true;
+
 
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
+    QTimer::singleShot(1,this,SLOT(config()));
     ui->setupUi(this);
     if(debug == false){
     QTimer::singleShot(1000, this, SLOT(showFullScreen()));
     }
-    QTimer::singleShot(100,this, SLOT(on_tabWidget_tabBarClicked()));
-    QTimer::singleShot(100,this, SLOT(backRunnerCall()));
+    this->setStyleSheet("background-color: #5d5b59;");
+    QTimer::singleShot(10,this, SLOT(on_tabWidget_tabBarClicked()));
 
+    if(startting == true){
+    QThread* kissa = new QThread;
+    threading* koira = new threading();
+    koira->moveToThread(kissa);
+    connect(koira, SIGNAL(VolumeChanged()), this, SLOT(on_tabWidget_tabBarClicked())); // ohjataan signaali volume changed -> on_tab..
+    connect(koira, SIGNAL(error(QString)), this, SLOT(errorString(QString)));
+    connect(kissa, SIGNAL(started()), koira, SLOT(suorita())); //functio threading.cpp alla = run()...
+    connect(koira, SIGNAL(finished()), kissa, SLOT(quit())); // hallitaan koiran koppiin paluu..
+    connect(koira, SIGNAL(finished()), koira, SLOT(deleteLater()));
+    connect(kissa, SIGNAL(finished()), kissa, SLOT(deleteLater()));
+    kissa->start();
+    startting=false;
+    }
 }
 
 MainWindow::~MainWindow()
@@ -52,286 +75,194 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::test(){
-    const char *homePath = getenv("HOME");
-    if(homePath != nullptr)
-    {
-        QProcess Home;
-        Home.start("echo",QStringList() << homePath);
-        Home.waitForFinished(-1);
-        qDebug() << Home.readAllStandardOutput();
-    }
-}
 
-void volumeUP(){
-    system("pamixer --increase 1");
-}
-
-void volumeDN(){
-    system("pamixer --decrease 1");
-}
-string volumeGet(string cmd) {
-    string data;
-    FILE * stream;
-    const int max_buffer = 256;
-    char buffer[max_buffer];
-    cmd.append(" 2>&1");
-
-    stream = popen(cmd.c_str(), "r");
-    if (stream) {
-    while (!feof(stream))
-    if (fgets(buffer, max_buffer, stream) != nullptr) data.append(buffer);
-    pclose(stream);
-    }
-    return data;
-}
-
-void call_from_thread() {
-    while (true) {
-        if(volUP==true){
-            volumeUP();
-            usleep(50000);
-        }
-        if(volDN==true){
-            volumeDN();
-            usleep(50000);
-        }
-        usleep(10000);
-    }
-}
-
-void MainWindow::backRunnerCall(){
-    std::thread t[num_threads];
-    t[0] = std::thread(call_from_thread);
-    t[0].detach();
-}
-void MainWindow::readConfigFile(const char* filename, list<string>& lines)
+void MainWindow::on_pushButton_pressed()
 {
-    lines.clear();
-    ifstream file(filename);
-    string s;
-    while (getline(file, s))
-        lines.push_back(s);
+    radioloader obj;
+    pidi = obj.controll(pidi,kanavalista[0].c_str(),0);
+    std::cout << "Pid: " << pidi << std::endl;
 }
-
-void radio(int i)
+void MainWindow::on_pushButton_2_pressed()
 {
-    PID=fork();
-    if(PID == -1){
-        puts("Fatalisti meni vituks");
-    }
-    if(PID != 0 ){
-        cout << PID << "\n";
-    }
-
-    if(PID == 0){
-        switch (i) {
-        case 1: {
-            char const *kanava = kanavalista[0].c_str();
-            execl("/usr/bin/mpv", "mpv",kanava ,NULL);
-            break;
-        }
-        case 2: {
-            char const *kanava = kanavalista[1].c_str();
-            execl("/usr/bin/mpv", "mpv",kanava ,NULL);
-            break;
-        }
-        case 3: {
-            char const *kanava = kanavalista[2].c_str();
-            execl("/usr/bin/mpv", "mpv",kanava ,NULL);
-            break;
-        }
-        case 4: {
-            char const *kanava = kanavalista[3].c_str();
-            execl("/usr/bin/mpv", "mpv",kanava ,NULL);
-            break;
-        }
-        case 5: {
-            char const *kanava = kanavalista[4].c_str();
-            execl("/usr/bin/mpv", "mpv",kanava ,NULL);
-            break;
-        }
-        case 6: {
-            char const *kanava = kanavalista[5].c_str();
-            execl("/usr/bin/mpv", "mpv",kanava ,NULL);
-            break;
-        }
-        }
-    }
+    radioloader obj;
+    pidi = obj.controll(pidi,kanavalista[1].c_str(),1);
+    std::cout << "Pid: " << pidi << std::endl;
 }
 
-
-void loadnetti(){
-    // TODO: legit check that adb is running and every command get executed
-    char tmuxRun[]="tmux send-keys -t tetherUSB.0 'adb shell' ENTER";
-    char tmuxRun2[]="tmux send-keys -t tetherUSB.0 'service call connectivity 34 i32 1 s16 text' ENTER";
-    char tmuxRun3[]="tmux send-keys -t tetherUSB.0 'exit' ENTER";
-    system("tmux new -d -s tetherUSB");
-    sleep(1);
-    system(tmuxRun);
-    sleep(1);
-    system(tmuxRun2);
-    sleep(1);
-    system(tmuxRun3);
-    usleep(100000);
-    system(tmuxRun3);
-    netti=1;
-    if((debug=true)){
-    cout << "Ladattu netti \n";
-    }
+void MainWindow::on_pushButton_3_pressed()
+{
+    radioloader obj;
+    pidi = obj.controll(pidi,kanavalista[2].c_str(),2);
+    std::cout << "Pid: " << pidi << std::endl;
 }
 
-void MainWindow::nuppiSetti(){
-    int i=stoi( volumeGet("pamixer --get-volume") );
-    ui->volumeSlider->setValue(i);
-
+void MainWindow::on_pushButton_4_pressed()
+{
+    radioloader obj;
+    pidi = obj.controll(pidi,kanavalista[3].c_str(),3);
+    std::cout << "Pid: " << pidi << std::endl;
 }
 
-void radioCheck(int kanava){
-        if(netti == 0){
-            netti=1;
-            //loadnetti();
-        }
-        if( soi == 0 ){
-            radio(kanava);
-            soi=kanava;
-        }
-        else if( soi == kanava){
-            string whatToKill=("kill -3 "+to_string(PID));
-            char const *killMe = whatToKill.c_str();
-            system(killMe);
-            soi=false;
-        }
-        else if( soi != 0){
-            string whatToKill=("kill -3 "+to_string(PID));
-            char const *killMe = whatToKill.c_str();
-            system(killMe);
-            soi=kanava;
-            radio(kanava);
-        }
-        else{
-            puts("todo netin lataus!! && launch mpv");
-        }
+void MainWindow::on_pushButton_5_pressed()
+{
+    radioloader obj;
+    pidi = obj.controll(pidi,kanavalista[4].c_str(),4);
+    std::cout << "Pid: " << pidi << std::endl;
+}
+
+void MainWindow::on_pushButton_6_pressed()
+{
+    radioloader obj;
+    pidi = obj.controll(pidi,kanavalista[5].c_str(),5);
+    std::cout << "Pid: " << pidi << std::endl;
 }
 
 void MainWindow::on_mute_pressed()
 {
-    int isItMuted = system("pamixer --get-mute");
-    cout << isItMuted;
-
-    if(isItMuted == 256){
-        int i=stoi( volumeGet("pamixer --get-volume") );
-        volume = i;
-        system("pamixer -m");
-        ui->volumeSlider->setValue(0);
-        }
-    else {
-        system("pamixer -u");
-        cout << volume << endl;
-        ui->volumeSlider->setValue(volume);
-    }
-}
-
-void MainWindow::on_ylex_pressed()
-{
-    radioCheck(1);
+    pahallinta pah;
+    ui->volumeSlider->setValue(pah.mute());
 }
 
 void MainWindow::on_usbnet_pressed()
 {
-    loadnetti();
-}
 
-
-void MainWindow::on_nrj_pressed()
-{
-    radioCheck(2);
-}
-
-void MainWindow::on_rock_pressed()
-{
-    radioCheck(3);
-}
-
-void MainWindow::on_suomipop_pressed()
-{
-    radioCheck(4);
-}
-
-void MainWindow::on_radioloop_pressed()
-{
-    radioCheck(5);
-}
-
-void MainWindow::on_hitmix_pressed()
-{
-    radioCheck(6);
 }
 
 void MainWindow::on_tabWidget_tabBarClicked()
 {
-    nuppiSetti();
-    on_reload_pressed();
-}
-
-void MainWindow::on_reload_pressed()
-{
-    // TODO update radio string array
-   //todo();
-   list<string> linesi;
-   readConfigFile("config.conf", linesi);
-   cout << "read " << linesi.size() << endl;
-   //for (const auto& line : linesi)
-   //    cout << line << endl;
-   int n=0;
-   for (const auto& line : linesi){
-       kanavalista[n]=line;
-       n++;
-   }
-}
-
-void MainWindow::on_blobbi_nappo_pressed()
-{
-    test();
+    pahallinta paha;
+    ui->volumeSlider->setValue(paha.volumeGet());
 }
 
 void MainWindow::on_volumeSlider_valueChanged(int value)
 {
-    if (system(nullptr));
-        else exit (EXIT_FAILURE);
-    string pamixer = "pamixer --set-volume ";
-    string arvo = pamixer +  to_string(value);
-    char const *muutetaan = arvo.c_str();
-    // system command
-    system(muutetaan);
+    pahallinta vola;
+    vola.volumelvl(value);
 }
-
-
 
 void MainWindow::on_volumeUp_pressed()
 {
     volUP=true;
+    threading Fola;
+    Fola.volumeUP(1);
 }
 
 void MainWindow::on_volumeUp_released()
 {
     volUP=false;
-    nuppiSetti();
-}
-
-void MainWindow::on_button_quit_pressed()
-{
-    //mpv quit check
-    QCoreApplication::quit();
+    threading Fola;
+    Fola.volumeUP(0);
 }
 
 void MainWindow::on_volumeDown_pressed()
 {
     volDN=true;
+    threading Fola;
+    Fola.volumeDown(1);
 }
 
 void MainWindow::on_volumeDown_released()
 {
     volDN=false;
-    nuppiSetti();
+    threading Fola;
+    Fola.volumeDown(0);
+}
+
+
+void MainWindow::on_button_quit_pressed()
+{
+    if(pidi !=-1){
+    string whatToKill=("kill -3 "+to_string(pidi));
+    char const *killMe = whatToKill.c_str();
+    system(killMe);
+}
+    //mpv quit check
+    QCoreApplication::quit();
+}
+
+void MainWindow::on_power_released()
+{
+    if(debug == false){
+    system("poweroff");
+    }
+    else{
+        system("echo sammuttas mutta on debug päällä..");
+        on_button_quit_pressed();
+    }
+}
+
+void MainWindow::store_line(std::string nimi, std::string osoite, int i){
+    kanavalista[i]=osoite;
+    kanavanimet[i]=nimi;
+    switch (i) {
+    case 0 : {
+        const char *nt = kanavanimet[i].c_str();
+        ui->pushButton->setText(nt);
+        break;
+    }
+    case 1 : {
+        const char *nt = kanavanimet[i].c_str();
+        ui->pushButton_2->setText(nt);
+        break;
+    }
+    case 2 : {
+        const char *nt = kanavanimet[i].c_str();
+        ui->pushButton_3->setText(nt);
+        break;
+    }
+    case 3 : {
+        const char *nt = kanavanimet[i].c_str();
+        ui->pushButton_4->setText(nt);
+        break;
+    }
+    case 4 : {
+        const char *nt = kanavanimet[i].c_str();
+        ui->pushButton_5->setText(nt);
+        break;
+    }
+    case 5 : {
+        const char *nt = kanavanimet[i].c_str();
+        ui->pushButton_6->setText(nt);
+        break;
+    }
+    }
+}
+
+void MainWindow::config(){
+
+    std::ifstream is_file("config.conf");
+
+    std::string line;
+    int i = 0;
+    while( std::getline(is_file, line) )
+    {
+      std::istringstream is_line(line);
+      std::string key;
+      if( std::getline(is_line, key, '=') )
+      {
+        std::string value;
+        if( std::getline(is_line, value) )
+          store_line(key, value, i);
+      }
+      i++;
+    }
+}
+
+
+void MainWindow::on_delay_power_pressed()
+{
+    QTimer::singleShot(60000, this, SLOT(n_power_released()));
+}
+
+void MainWindow::on_checkBox_stateChanged(int arg1)
+{
+    if(arg1 == 2){
+        this->setStyleSheet("background-color: #35322f;");
+    }
+    if(arg1 == 0){
+        this->setStyleSheet("background-color: #5d5b59;");
+        //5d5b59 868482
+    }
+    std::cout << arg1 << std::endl;
+
 }

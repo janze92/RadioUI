@@ -15,6 +15,12 @@
 #include <list>
 #include <QMainWindow>
 
+class blthallinta;
+class usbctl;
+class radioloader;
+class pahallinta;
+class threading;
+
 namespace Ui {
 class MainWindow;
 }
@@ -27,38 +33,34 @@ public:
     explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
-private slots:
+public slots:
+     void on_volumeSlider_valueChanged(int value);
 
+     void on_tabWidget_tabBarClicked();
+
+signals:
+     void arvoMuuttunut(int arvo);
+
+private slots:
+    void store_line(std::string nimi, std::string osoite, int i);
+
+    void config();
+
+    void on_pushButton_pressed();
+
+    void on_pushButton_2_pressed();
+
+    void on_pushButton_3_pressed();
+
+    void on_pushButton_4_pressed();
+
+    void on_pushButton_5_pressed();
+
+    void on_pushButton_6_pressed();
 
     void on_mute_pressed();
 
-    void on_ylex_pressed();
-
     void on_usbnet_pressed();
-
-    void on_nrj_pressed();
-
-    void on_rock_pressed();
-
-    void on_suomipop_pressed();
-
-    void on_radioloop_pressed();
-
-    void on_hitmix_pressed();
-
-    void nuppiSetti();
-
-    void on_tabWidget_tabBarClicked();
-
-    void on_reload_pressed();
-
-    void readConfigFile(const char* filename, std::list<std::string>& lines);
-
-    void test();
-
-    void on_blobbi_nappo_pressed();
-
-    void on_volumeSlider_valueChanged(int value);
 
     void on_volumeUp_pressed();
 
@@ -66,14 +68,22 @@ private slots:
 
     void on_volumeUp_released();
 
-    void backRunnerCall();
-
     void on_volumeDown_pressed();
 
     void on_volumeDown_released();
 
+    void on_power_released();
+
+    void on_delay_power_pressed();
+
+    void on_checkBox_stateChanged(int arg1);
+
 private:
     Ui::MainWindow *ui;
 };
+
+#include "blthallinta.h"
+#include "usbctl.h"
+#include "radioloader.h"
 
 #endif // MAINWINDOW_H

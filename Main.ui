@@ -53,7 +53,7 @@
      <enum>QTabWidget::Rounded</enum>
     </property>
     <property name="currentIndex">
-     <number>0</number>
+     <number>2</number>
     </property>
     <property name="iconSize">
      <size>
@@ -108,84 +108,6 @@
        <bool>true</bool>
       </property>
      </widget>
-     <widget class="QPushButton" name="ylex">
-      <property name="geometry">
-       <rect>
-        <x>20</x>
-        <y>30</y>
-        <width>151</width>
-        <height>71</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>YleX</string>
-      </property>
-     </widget>
-     <widget class="QPushButton" name="rock">
-      <property name="geometry">
-       <rect>
-        <x>20</x>
-        <y>120</y>
-        <width>151</width>
-        <height>71</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>RadioRock</string>
-      </property>
-     </widget>
-     <widget class="QPushButton" name="nrj">
-      <property name="geometry">
-       <rect>
-        <x>190</x>
-        <y>30</y>
-        <width>151</width>
-        <height>71</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>NRJ</string>
-      </property>
-     </widget>
-     <widget class="QPushButton" name="suomipop">
-      <property name="geometry">
-       <rect>
-        <x>190</x>
-        <y>120</y>
-        <width>151</width>
-        <height>71</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Suomipop</string>
-      </property>
-     </widget>
-     <widget class="QPushButton" name="radioloop">
-      <property name="geometry">
-       <rect>
-        <x>360</x>
-        <y>30</y>
-        <width>151</width>
-        <height>71</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>loop</string>
-      </property>
-     </widget>
-     <widget class="QPushButton" name="hitmix">
-      <property name="geometry">
-       <rect>
-        <x>360</x>
-        <y>120</y>
-        <width>151</width>
-        <height>71</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>HitMix</string>
-      </property>
-     </widget>
      <widget class="QSlider" name="volumeSlider">
       <property name="enabled">
        <bool>true</bool>
@@ -237,6 +159,84 @@
        <string>Down</string>
       </property>
      </widget>
+     <widget class="QPushButton" name="pushButton">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>10</y>
+        <width>161</width>
+        <height>51</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>PushButton</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="pushButton_2">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>80</y>
+        <width>161</width>
+        <height>51</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>PushButton</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="pushButton_3">
+      <property name="geometry">
+       <rect>
+        <x>170</x>
+        <y>10</y>
+        <width>161</width>
+        <height>51</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>PushButton</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="pushButton_4">
+      <property name="geometry">
+       <rect>
+        <x>170</x>
+        <y>80</y>
+        <width>161</width>
+        <height>51</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>PushButton</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="pushButton_5">
+      <property name="geometry">
+       <rect>
+        <x>340</x>
+        <y>10</y>
+        <width>161</width>
+        <height>51</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>PushButton</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="pushButton_6">
+      <property name="geometry">
+       <rect>
+        <x>340</x>
+        <y>80</y>
+        <width>161</width>
+        <height>51</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>PushButton</string>
+      </property>
+     </widget>
     </widget>
     <widget class="QWidget" name="Connect">
      <attribute name="title">
@@ -286,35 +286,17 @@
        <string>Kanavalista</string>
       </property>
      </widget>
-     <widget class="QPushButton" name="blobbi_nappo">
+     <widget class="QCheckBox" name="checkBox">
       <property name="geometry">
        <rect>
-        <x>270</x>
-        <y>170</y>
-        <width>191</width>
-        <height>71</height>
+        <x>672</x>
+        <y>0</y>
+        <width>121</width>
+        <height>31</height>
        </rect>
       </property>
       <property name="text">
-       <string>hmm</string>
-      </property>
-     </widget>
-    </widget>
-    <widget class="QWidget" name="Time">
-     <property name="layoutDirection">
-      <enum>Qt::RightToLeft</enum>
-     </property>
-     <attribute name="title">
-      <string extracomment="Tee event timer, joka päivittää hiljalleen sisältöä, esim tab todo-&gt; kellonaika per 30s jne">TODO</string>
-     </attribute>
-     <widget class="QCalendarWidget" name="calendarWidget">
-      <property name="geometry">
-       <rect>
-        <x>0</x>
-        <y>0</y>
-        <width>791</width>
-        <height>441</height>
-       </rect>
+       <string>Yö tila</string>
       </property>
      </widget>
     </widget>
@@ -346,6 +328,19 @@
       </property>
       <property name="text">
        <string>Quit</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="delay_power">
+      <property name="geometry">
+       <rect>
+        <x>580</x>
+        <y>170</y>
+        <width>211</width>
+        <height>261</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>1min Poweroff</string>
       </property>
      </widget>
     </widget>
