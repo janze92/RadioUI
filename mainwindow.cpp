@@ -38,7 +38,6 @@ static string kanavalista[6];
 static std::string kanavanimet[5];
 static bool volUP=false;
 static bool volDN=false;
-static int volume;
 static bool startting=true;
 
 
@@ -47,7 +46,7 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
-    QTimer::singleShot(1,this,SLOT(config()));
+    QTimer::singleShot(100,this,SLOT(config()));
     ui->setupUi(this);
     if(debug == false){
     QTimer::singleShot(1000, this, SLOT(showFullScreen()));
@@ -57,7 +56,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     if(startting == true){
     QThread* kissa = new QThread;
-    threading* koira = new threading();
+    threading* koira = new threading();  // header jolta huudetaan funktio
     koira->moveToThread(kissa);
     connect(koira, SIGNAL(VolumeChanged()), this, SLOT(on_tabWidget_tabBarClicked())); // ohjataan signaali volume changed -> on_tab..
     connect(koira, SIGNAL(error(QString)), this, SLOT(errorString(QString)));
@@ -66,6 +65,19 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(koira, SIGNAL(finished()), koira, SLOT(deleteLater()));
     connect(kissa, SIGNAL(finished()), kissa, SLOT(deleteLater()));
     kissa->start();
+    QThread* robotti = new QThread;
+    usbctl* robotinSaije = new usbctl();
+    robotinSaije->moveToThread(robotti);
+    connect(robotinSaije, SIGNAL(loaded()), this, SLOT(signal_handler()));
+    connect(robotti, SIGNAL(started()), robotinSaije, SLOT(startUp()));
+    connect(robotti, SIGNAL(started()), robotinSaije, SLOT(status()));
+    robotti->start();
+    QThread* doge = new QThread;
+    usbctl* dogeSaije = new usbctl();
+    dogeSaije->moveToThread(doge);
+    connect(dogeSaije, SIGNAL(loaded()), this, SLOT(signal_handler()));
+    connect(doge, SIGNAL(started()), dogeSaije, SLOT(status()));
+    doge->start();
     startting=false;
     }
 }
@@ -75,6 +87,9 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
+void MainWindow::signal_handler(){
+    // hallitaas robotilta tulevaa signaalia
+}
 
 void MainWindow::on_pushButton_pressed()
 {
@@ -125,7 +140,12 @@ void MainWindow::on_mute_pressed()
 
 void MainWindow::on_usbnet_pressed()
 {
-
+    QThread* robotti = new QThread;
+    usbctl* robotinSaije = new usbctl();
+    robotinSaije->moveToThread(robotti);
+    connect(robotinSaije, SIGNAL(loaded()), this, SLOT(signal_handler()));  // joku netti iconi etu sivulle
+    connect(robotti, SIGNAL(started()), robotinSaije, SLOT(loadPhone()));
+    robotti->start();
 }
 
 void MainWindow::on_tabWidget_tabBarClicked()
@@ -263,6 +283,4 @@ void MainWindow::on_checkBox_stateChanged(int arg1)
         this->setStyleSheet("background-color: #5d5b59;");
         //5d5b59 868482
     }
-    std::cout << arg1 << std::endl;
-
 }

@@ -8,11 +8,9 @@ static bool volUP=false;
 static bool volDN=false;
 
 threading::threading(){
-
 }
 
 threading::~threading(){
-
 }
 
 

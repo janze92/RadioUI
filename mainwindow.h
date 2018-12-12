@@ -78,6 +78,8 @@ private slots:
 
     void on_checkBox_stateChanged(int arg1);
 
+    void signal_handler();
+
 private:
     Ui::MainWindow *ui;
 };
