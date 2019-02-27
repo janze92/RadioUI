@@ -3,12 +3,19 @@
 #include <QString>
 #include <qdebug.h>
 #include "iostream"
+#include <stdexcept>
+#include <stdio.h>
+#include <string>
+
+static int iplinkN=0;
 
 usbctl::usbctl(){
 }
 usbctl::~usbctl(){
 }
 void usbctl::loadPhone(){
+    std::cout << "IP link load: " << iplinkN << std::endl; // for testing only
+
     // TODO: legit check that adb is running and every command get executed
     //  check up what android version is device running
     //
@@ -24,16 +31,47 @@ void usbctl::loadPhone(){
     system(tmuxRun3);
     usleep(100000);
     system(tmuxRun3);
+
+    char puskuri[128];
+    std::string muutaINT = "";
+    FILE* pipe = popen("ip link|wc -l", "r");
+    if(!pipe) throw std::runtime_error("popen() fiasco :(");
+    try {
+        while(fgets(puskuri, sizeof puskuri, pipe) != nullptr){
+            iplinkN = std::stoi(puskuri);
+
+        }
+    } catch (...) {
+        pclose(pipe);
+        throw;
+    }
 }
 
 
-void usbctl::startUp() {
+void usbctl::startUp() { // bugi: iplinkN arvo muuttuu 10 -> 6 function loputtua :o
     bool ladattu=false;
     system("adb start-server");
+
+    char puskuri[128];
+    std::string muutaINT = "";
+    FILE* pipe = popen("ip link|wc -l", "r");
+    if(!pipe) throw std::runtime_error("popen() fiasco :(");
+    try {
+        while(fgets(puskuri, sizeof puskuri, pipe) != nullptr){
+            iplinkN = std::stoi(puskuri);
+        }
+    } catch (...) {
+        pclose(pipe);
+        throw;
+    }
+
+    std::cout << "IP link: " << iplinkN << std::endl; // for testing only
     while (true) {
         int usbdeviceID = system("lsusb -d 2e04:c026");
         usleep(1000000);
-        //cout << "looppaa" << endl;
+        std::cout << "looppaa" << std::endl;
+        std::cout << "IP link: " << iplinkN << std::endl; // for testing only
+
         if(usbdeviceID == 0 && ladattu==false){
             ladattu = true;
             //cout << "ladataan laite" << endl;
@@ -45,20 +83,43 @@ void usbctl::startUp() {
         if(ladattu == true)
             break;
     }
+
 }
 
 void usbctl::status(){ // bugi QTcreatorissa ?
+
     while (true) {
-        int usbdeviceID = system("lsusb -d 2e04:c008 &> /dev/null"); // paree versio laite hallintaan..
-        if(usbdeviceID == 0){
+        msleep(5000);
+        std::cout << "IP link status: " << iplinkN << std::endl; // for testing only
+
+        int usbdeviceID=0;
+        char puskuri[128];
+        std::string muutaINT = "";
+        FILE* pipe = popen("ip link|wc -l", "r");
+        if(!pipe) throw std::runtime_error("popen() fiasco :(");
+        try {
+            while(fgets(puskuri, sizeof puskuri, pipe) != nullptr){
+                usbdeviceID = std::stoi(puskuri);
+
+            }
+        } catch (...) {
+            pclose(pipe);
+            throw;
+        }
+
+
+
+//        int usbdeviceID = system("lsusb -d 2e04:c008 &> /dev/null"); // paree versio laite hallintaan..
+
+        if(usbdeviceID == iplinkN){
             emit loaded();
             }
-        if(usbdeviceID != 0){
+        if(usbdeviceID != iplinkN){
             // not loaded
-            startUp();
-            sleep(60);
+            //startUp();
+            std::cout << "usbD " << usbdeviceID << "iplinkN " << iplinkN << std::endl;
+            //sleep(60);
         }
-        msleep(5000);
         if(usbdeviceID == -1){
             break; // for compiler warn  silence
         }

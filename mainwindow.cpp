@@ -4,6 +4,7 @@
 #include "threading.h"
 #include "usbctl.h"
 #include "blthallinta.h"
+#include "shootcommand.h"
 #include "ui_Main.h"
 #include "stdlib.h"  /* system lib */
 #include "stdio.h"
@@ -28,11 +29,24 @@
 #include <QString>
 #include <qpalette.h>
 
+#include <QtWebKit/QWebHistory>
+#include <QtWebKit/QWebHistoryItem>
+#include <QtWebKitWidgets/QWebView>
+#include <QtWebKitWidgets/QWebPage>
+
+// for signal passing testing
+#include <QAction>
+
+
  using namespace std;
 
 // julkiset muuttujat
 static bool debug=true;
-static int netti=0;
+
+static char xmmsHack[16]="bash watcher.sh";
+static char xmmsTouch[24]="touch /tmp/todoxmms.txt";
+
+// static int netti=0;
 static pid_t pidi=-1;
 static string kanavalista[6];
 static std::string kanavanimet[5];
@@ -46,6 +60,7 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
+
     QTimer::singleShot(100,this,SLOT(config()));
     ui->setupUi(this);
     if(debug == false){
@@ -55,29 +70,31 @@ MainWindow::MainWindow(QWidget *parent) :
     QTimer::singleShot(10,this, SLOT(on_tabWidget_tabBarClicked()));
 
     if(startting == true){
+     // Prepairing for local player controll hack..
+     system(xmmsTouch);
+
     QThread* kissa = new QThread;
-    threading* koira = new threading();  // header jolta huudetaan funktio
+    threading* koira = new threading();  // header jolta huudetaan funktio ja jonka nimi näemmä on tuo threading...... :D
     koira->moveToThread(kissa);
     connect(koira, SIGNAL(VolumeChanged()), this, SLOT(on_tabWidget_tabBarClicked())); // ohjataan signaali volume changed -> on_tab..
-    connect(koira, SIGNAL(error(QString)), this, SLOT(errorString(QString)));
+   // connect(koira, SIGNAL(error(QString)), this, SLOT(errorString(QString)));
     connect(kissa, SIGNAL(started()), koira, SLOT(suorita())); //functio threading.cpp alla = run()...
     connect(koira, SIGNAL(finished()), kissa, SLOT(quit())); // hallitaan koiran koppiin paluu..
     connect(koira, SIGNAL(finished()), koira, SLOT(deleteLater()));
     connect(kissa, SIGNAL(finished()), kissa, SLOT(deleteLater()));
     kissa->start();
-    QThread* robotti = new QThread;
-    usbctl* robotinSaije = new usbctl();
-    robotinSaije->moveToThread(robotti);
-    connect(robotinSaije, SIGNAL(loaded()), this, SLOT(signal_handler()));
-    connect(robotti, SIGNAL(started()), robotinSaije, SLOT(startUp()));
-    connect(robotti, SIGNAL(started()), robotinSaije, SLOT(status()));
-    robotti->start();
-    QThread* doge = new QThread;
-    usbctl* dogeSaije = new usbctl();
-    dogeSaije->moveToThread(doge);
-    connect(dogeSaije, SIGNAL(loaded()), this, SLOT(signal_handler()));
-    connect(doge, SIGNAL(started()), dogeSaije, SLOT(status()));
-    doge->start();
+//    QThread* robotti = new QThread;
+//    usbctl* robotinSaije = new usbctl();
+//    robotinSaije->moveToThread(robotti);
+//    connect(robotinSaije, SIGNAL(loaded()), this, SLOT(signal_handler()));
+//    connect(robotti, SIGNAL(started()), robotinSaije, SLOT(startUp()));
+//    robotti->start();
+//    QThread* doge = new QThread;
+//    usbctl* dogeSaije = new usbctl();
+//    dogeSaije->moveToThread(doge);
+//    connect(dogeSaije, SIGNAL(loaded()), this, SLOT(signal_handler()));
+//    connect(doge, SIGNAL(started()), dogeSaije, SLOT(status()));
+//    doge->start();
     startting=false;
     }
 }
@@ -89,6 +106,20 @@ MainWindow::~MainWindow()
 
 void MainWindow::signal_handler(){
     // hallitaas robotilta tulevaa signaalia
+}
+
+void MainWindow::workHorse(int wut){
+    if (wut == 1){
+             QThread* xmms = new QThread; // nimeä tähän sillee et ymmärtää mistä menee minne päin bitti
+             shootCommand* xmmsSaije = new shootCommand();
+             xmmsSaije->moveToThread(xmms);
+             //connect(this, SIGNAL(on_tabWidget_currentChanged(int index)), xmmsSaije, SLOT(inttiboi()));
+             connect(xmmsSaije, SIGNAL(finished()), xmms, SLOT(quit()));
+             xmms->start();
+    }
+    else {
+        // no defined what want to do
+    }
 }
 
 void MainWindow::on_pushButton_pressed()
@@ -271,7 +302,7 @@ void MainWindow::config(){
 
 void MainWindow::on_delay_power_pressed()
 {
-    QTimer::singleShot(60000, this, SLOT(n_power_released()));
+    QTimer::singleShot(60000, this, SLOT(on_power_released()));
 }
 
 void MainWindow::on_checkBox_stateChanged(int arg1)
@@ -282,5 +313,13 @@ void MainWindow::on_checkBox_stateChanged(int arg1)
     if(arg1 == 0){
         this->setStyleSheet("background-color: #5d5b59;");
         //5d5b59 868482
+    }
+}
+
+void MainWindow::on_tabWidget_currentChanged(int index)
+{
+    std::cout <<  "Index="<< index << std::endl;
+    if (index == 1){
+        workHorse(1);
     }
 }

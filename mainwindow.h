@@ -80,6 +80,10 @@ private slots:
 
     void signal_handler();
 
+    void on_tabWidget_currentChanged(int index);
+
+    void workHorse(int wut);
+
 private:
     Ui::MainWindow *ui;
 };

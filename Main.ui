@@ -53,7 +53,7 @@
      <enum>QTabWidget::Rounded</enum>
     </property>
     <property name="currentIndex">
-     <number>2</number>
+     <number>1</number>
     </property>
     <property name="iconSize">
      <size>
@@ -84,7 +84,7 @@
       </size>
      </property>
      <attribute name="title">
-      <string>Main</string>
+      <string>Radio</string>
      </attribute>
      <widget class="QPushButton" name="mute">
       <property name="geometry">
@@ -238,6 +238,52 @@
       </property>
      </widget>
     </widget>
+    <widget class="QWidget" name="LocalPlayer">
+     <attribute name="title">
+      <string>Soitin</string>
+     </attribute>
+     <widget class="QPushButton" name="volumeUp_3">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>230</y>
+        <width>211</width>
+        <height>91</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>UP</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="volumeDown_3">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>340</y>
+        <width>211</width>
+        <height>91</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Down</string>
+      </property>
+     </widget>
+     <widget class="QWebView" name="webView">
+      <property name="geometry">
+       <rect>
+        <x>220</x>
+        <y>0</y>
+        <width>571</width>
+        <height>421</height>
+       </rect>
+      </property>
+      <property name="url">
+       <url>
+        <string>http://localhost/~janze/soitin/xmms2swi/index.php?p=testi</string>
+       </url>
+      </property>
+     </widget>
+    </widget>
     <widget class="QWidget" name="Connect">
      <attribute name="title">
       <string>Connect</string>
@@ -347,6 +393,13 @@
    </widget>
   </widget>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>QWebView</class>
+   <extends>QWidget</extends>
+   <header location="global">QtWebKitWidgets/QWebView</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>

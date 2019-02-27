@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui
+QT       += core gui webkitwidgets
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -37,7 +37,8 @@ SOURCES += \
     radioloader.cpp \
     pahallinta.cpp \
     scrap_book.cpp \
-    threading.cpp
+    threading.cpp \
+    shootcommand.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -45,7 +46,8 @@ HEADERS += \
     usbctl.h \
     radioloader.h \
     pahallinta.h \
-    threading.h
+    threading.h \
+    shootcommand.h
 
 FORMS += \
         Main.ui
