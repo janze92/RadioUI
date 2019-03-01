@@ -10,13 +10,16 @@ class shootCommand : public QThread
 {
         Q_OBJECT
 public:
-    shootCommand();
+    shootCommand(char aakkonenTaululle[]);
     ~shootCommand();
+private:
+    char aakkonenT[256];
 
 public slots:
-    void suoritaKomento(const char* komento);
-    void mitavittua();
-    void inttiboi(int i);
+    void runRun();
+    void test();
+    void stop();
+    void runAgen();
 
 signals:
     void finished();

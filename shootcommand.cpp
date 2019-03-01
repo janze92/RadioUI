@@ -7,25 +7,46 @@
 #include <stdlib.h>
 
 
-shootCommand::shootCommand(){
+static int stopPoit;
+static int runTrue;
+static bool exitRun;
+
+shootCommand::shootCommand(char aakkonenTaululle[]){
+    strcpy(aakkonenT, aakkonenTaululle);
 }
 shootCommand::~shootCommand(){
 }
 
-void shootCommand::mitavittua(){
-    std::system("echo hello");
-    std::system("echo ... > /tmp/toimii");
+void shootCommand::runRun(){
+    stopPoit=0;
+    runTrue=1;
+    exitRun=false;
+    // Lataa muuttujat constructorista
+    while (stopPoit==0) {
+        if(exitRun==false){
+            while (exitRun==false) {
+                // system(aakkonenT);
+                sleep(1);
+                qDebug()<< "sisempi Thread: " <<currentThreadId();
+            }
+        }
+        sleep(1);
+    }
     emit finished();
+
 }
 
-void shootCommand::inttiboi(int i){
-    std::system("echo hello");
-    std::system("echo ... > /tmp/toimii");
-    emit finished();
+void shootCommand::test(){
+    //std::cout << aakkonenT << std::endl;
+    qDebug()<< "Test" << " " ;
+
 }
 
-void shootCommand::suoritaKomento(const char* komento){
-        std::system(komento);
-        qDebug("Hello World!");
-        emit finished();
+void shootCommand::stop(){
+    exitRun=true;
+    qDebug()<< "stap" << " " ;
+}
+
+void shootCommand::runAgen(){
+    exitRun=0;
 }

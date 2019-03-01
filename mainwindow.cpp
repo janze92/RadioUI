@@ -72,7 +72,16 @@ MainWindow::MainWindow(QWidget *parent) :
     if(startting == true){
      // Prepairing for local player controll hack..
      system(xmmsTouch);
-
+     //
+     QThread* xmms = new QThread; // nimeä tähän sillee et ymmärtää mistä menee minne päin bitti
+     shootCommand* xmmsSaije = new shootCommand(xmmsHack);
+     xmmsSaije->moveToThread(xmms);
+     connect(xmms, SIGNAL(started()), xmmsSaije, SLOT(runRun())); // jääkö while looppaava ns odottamaan loopin loppua ennen uuden
+     connect(xmmsSaije, SIGNAL(finished()), xmms, SLOT(quit()));  // funktion aloitusta?? // tekeekö muistivuodon jos ei kutsu ikinä quit();
+     connect(xmmsSaije, SIGNAL(finished()), xmmsSaije, SLOT(deleteLater()));
+     connect(xmms, SIGNAL(finished()), xmms, SLOT(deleteLater()));
+     xmms->start();
+     //
     QThread* kissa = new QThread;
     threading* koira = new threading();  // header jolta huudetaan funktio ja jonka nimi näemmä on tuo threading...... :D
     koira->moveToThread(kissa);
@@ -97,6 +106,9 @@ MainWindow::MainWindow(QWidget *parent) :
 //    doge->start();
     startting=false;
     }
+
+    // testataas tähän pääloopin sisään laittaa .. haisee pahalle idealle :P
+
 }
 
 MainWindow::~MainWindow()
@@ -110,15 +122,13 @@ void MainWindow::signal_handler(){
 
 void MainWindow::workHorse(int wut){
     if (wut == 1){
-             QThread* xmms = new QThread; // nimeä tähän sillee et ymmärtää mistä menee minne päin bitti
-             shootCommand* xmmsSaije = new shootCommand();
-             xmmsSaije->moveToThread(xmms);
-             //connect(this, SIGNAL(on_tabWidget_currentChanged(int index)), xmmsSaije, SLOT(inttiboi()));
-             connect(xmmsSaije, SIGNAL(finished()), xmms, SLOT(quit()));
-             xmms->start();
+
     }
     else {
         // no defined what want to do
+//        char i[]="";
+//        shootCommand kommari(i);
+//        kommari.stop();
     }
 }
 
@@ -322,4 +332,18 @@ void MainWindow::on_tabWidget_currentChanged(int index)
     if (index == 1){
         workHorse(1);
     }
+}
+
+void MainWindow::on_emitteri_clicked()
+{
+    char i[]="";
+    shootCommand kommari(i);
+    kommari.stop();
+}
+
+void MainWindow::on_emittest_pressed()
+{
+    char i[]="";
+    shootCommand kommari(i);
+    kommari.runAgen();
 }

@@ -20,6 +20,7 @@ class usbctl;
 class radioloader;
 class pahallinta;
 class threading;
+class shootCommand;
 
 namespace Ui {
 class MainWindow;
@@ -38,8 +39,10 @@ public slots:
 
      void on_tabWidget_tabBarClicked();
 
-signals:
+public: signals:
      void arvoMuuttunut(int arvo);
+     void emittitesti();
+     void emtest();
 
 private slots:
     void store_line(std::string nimi, std::string osoite, int i);
@@ -83,6 +86,10 @@ private slots:
     void on_tabWidget_currentChanged(int index);
 
     void workHorse(int wut);
+
+    void on_emitteri_clicked();
+
+    void on_emittest_pressed();
 
 private:
     Ui::MainWindow *ui;
