@@ -91,6 +91,12 @@ private slots:
 
     void on_emittest_pressed();
 
+    void on_button_valitsin_released();
+
+    void on_horizontalSlider_valueChanged(int value);
+
+    void on_aseta_released();
+
 private:
     Ui::MainWindow *ui;
 };

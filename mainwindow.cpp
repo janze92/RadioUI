@@ -53,6 +53,7 @@ static std::string kanavanimet[5];
 static bool volUP=false;
 static bool volDN=false;
 static bool startting=true;
+static double kanavantaajuus=90.10;
 
 
 
@@ -135,41 +136,41 @@ void MainWindow::workHorse(int wut){
 void MainWindow::on_pushButton_pressed()
 {
     radioloader obj;
-    pidi = obj.controll(pidi,kanavalista[0].c_str(),0);
+    pidi = obj.controll(pidi,kanavalista[0].c_str(),0,0);
     std::cout << "Pid: " << pidi << std::endl;
 }
 void MainWindow::on_pushButton_2_pressed()
 {
     radioloader obj;
-    pidi = obj.controll(pidi,kanavalista[1].c_str(),1);
+    pidi = obj.controll(pidi,kanavalista[1].c_str(),1,0);
     std::cout << "Pid: " << pidi << std::endl;
 }
 
 void MainWindow::on_pushButton_3_pressed()
 {
     radioloader obj;
-    pidi = obj.controll(pidi,kanavalista[2].c_str(),2);
+    pidi = obj.controll(pidi,kanavalista[2].c_str(),2,0);
     std::cout << "Pid: " << pidi << std::endl;
 }
 
 void MainWindow::on_pushButton_4_pressed()
 {
     radioloader obj;
-    pidi = obj.controll(pidi,kanavalista[3].c_str(),3);
+    pidi = obj.controll(pidi,kanavalista[3].c_str(),3,0);
     std::cout << "Pid: " << pidi << std::endl;
 }
 
 void MainWindow::on_pushButton_5_pressed()
 {
     radioloader obj;
-    pidi = obj.controll(pidi,kanavalista[4].c_str(),4);
+    pidi = obj.controll(pidi,kanavalista[4].c_str(),4,0);
     std::cout << "Pid: " << pidi << std::endl;
 }
 
 void MainWindow::on_pushButton_6_pressed()
 {
     radioloader obj;
-    pidi = obj.controll(pidi,kanavalista[5].c_str(),5);
+    pidi = obj.controll(pidi,kanavalista[5].c_str(),5,0);
     std::cout << "Pid: " << pidi << std::endl;
 }
 
@@ -347,3 +348,71 @@ void MainWindow::on_emittest_pressed()
     shootCommand kommari(i);
     kommari.runAgen();
 }
+
+void MainWindow::on_button_valitsin_released()
+{
+    if(ui->stackedWidget->currentIndex() == 0){
+        ui->button_valitsin->setText("Netti radio");
+        ui->stackedWidget->setCurrentIndex(1);
+
+    }
+    else{
+        ui->button_valitsin->setText("FM Radio");
+        ui->stackedWidget->setCurrentIndex(0);
+    }
+
+}
+void MainWindow::on_horizontalSlider_valueChanged(int value)
+{
+    double i = value*0.01;
+    kanavantaajuus = i;
+    ui->labelMHZ->setText(QString::number(i));
+}
+void MainWindow::on_aseta_released()
+{
+    // pitää alkaa välilyönnillä
+    // -f 90.1M -M fm -s 800k -o 4 -A fast -r 48000 -l 0 -E deemp - | aplay -D pulse  -r 48000 -f S16_LE
+    QString taajuus=QString::number(kanavantaajuus);
+    string roskanalku="rtl_fm -f ";
+    string roskanloppu="M -M fm -s 800k -o 4 -A fast -r 48000 -l 0 -E deemp - | aplay -D pulse  -r 48000 -f S16_LE";
+    string kokoroska = roskanalku + taajuus.toStdString()+ roskanloppu;
+    //std::cout << kokoroska << std::endl;
+    radioloader obj;
+    pidi = obj.controll(pidi,kokoroska.c_str(),6,1);
+    std::cout << "Pid: " << pidi << std::endl;
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

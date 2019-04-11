@@ -26,8 +26,9 @@ void shootCommand::runRun(){
         if(exitRun==false){
             while (exitRun==false) {
                 // system(aakkonenT);
-                sleep(1);
+
                 qDebug()<< "sisempi Thread: " <<currentThreadId();
+                sleep(1);
             }
         }
         sleep(1);
