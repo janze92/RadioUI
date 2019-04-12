@@ -29,10 +29,10 @@
 #include <QString>
 #include <qpalette.h>
 
-#include <QtWebKit/QWebHistory>
-#include <QtWebKit/QWebHistoryItem>
-#include <QtWebKitWidgets/QWebView>
-#include <QtWebKitWidgets/QWebPage>
+//#include <QtWebKit/QWebHistory>
+//#include <QtWebKit/QWebHistoryItem>
+//#include <QtWebKitWidgets/QWebView>
+//#include <QtWebKitWidgets/QWebPage>
 
 // for signal passing testing
 #include <QAction>

@@ -53,7 +53,7 @@
      <enum>QTabWidget::Rounded</enum>
     </property>
     <property name="currentIndex">
-     <number>0</number>
+     <number>1</number>
     </property>
     <property name="iconSize">
      <size>
@@ -403,21 +403,6 @@
        <string>Down</string>
       </property>
      </widget>
-     <widget class="QWebView" name="webView">
-      <property name="geometry">
-       <rect>
-        <x>220</x>
-        <y>0</y>
-        <width>571</width>
-        <height>421</height>
-       </rect>
-      </property>
-      <property name="url">
-       <url>
-        <string>http://localhost/~janze/soitin/xmms2swi/index.php?p=testi</string>
-       </url>
-      </property>
-     </widget>
      <widget class="QPushButton" name="emitteri">
       <property name="geometry">
        <rect>
@@ -554,13 +539,6 @@
    </widget>
   </widget>
  </widget>
- <customwidgets>
-  <customwidget>
-   <class>QWebView</class>
-   <extends>QWidget</extends>
-   <header location="global">QtWebKitWidgets/QWebView</header>
-  </customwidget>
- </customwidgets>
  <resources/>
  <connections/>
 </ui>
